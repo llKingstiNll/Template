@@ -92,6 +92,11 @@
     <ClInclude Include="CBase4618.h" />
     <ClInclude Include="CControl.h" />
     <ClInclude Include="CCourse.h" />
+    <ClInclude Include="CGameObject.h" />
+    <ClInclude Include="CInvader.h" />
+    <ClInclude Include="CMissile.h" />
+    <ClInclude Include="CShip.h" />
+    <ClInclude Include="CSpaceInvaderGame.h" />
     <ClInclude Include="CStudent.h" />
     <ClInclude Include="cvui.h" />
     <ClInclude Include="Pong.h" />
@@ -103,7 +108,12 @@
     <ClCompile Include="4618_Template.cpp" />
     <ClCompile Include="CBase4618.cpp" />
     <ClCompile Include="CCourse.cpp" />
+    <ClCompile Include="CGameObject.cpp" />
+    <ClCompile Include="CInvader.cpp" />
+    <ClCompile Include="CMissile.cpp" />
+    <ClCompile Include="CShip.cpp" />
     <ClCompile Include="CSketch.cpp" />
+    <ClCompile Include="CSpaceInvaderGame.cpp" />
     <ClCompile Include="Pong.cpp" />
     <ClCompile Include="Serial.cpp" />
     <ClCompile Include="server.cpp" />

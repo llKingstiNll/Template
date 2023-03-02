@@ -11,13 +11,13 @@
 CSketch::CSketch(int comPort)
 {
    // Canvas Size
-   resx = 1080; //1080
-   resy = 1080; //1080
+   resx = 400; //1080
+   resy = 400; //1080
    CBase4618::canvas = cv::Mat::zeros(resy, resx, CV_8UC3);
    CBase4618::canvas = cv::Scalar(255, 255, 255);
    CBase4618::exitButton = false;
 
-   scale = 1.35;
+   scale = 1.4;
    colour = 0;
 
    // Getting the initial point
@@ -127,28 +127,28 @@ void CSketch::update()
 
    if(colour == 0)
    {
-      line(canvas, p1, p2, cv::Scalar(255, 0, 0), 20, cv::LINE_AA);
+      line(canvas, p1, p2, cv::Scalar(255, 0, 0), 10, cv::LINE_AA);
       colourName = "Blue";
       control.set_data(0, 38, 0);
       control.set_data(0, 39, 0);
    }
    else if(colour == 1)
    {
-      line(canvas, p1, p2, cv::Scalar(0, 255, 0), 20, cv::LINE_AA);
+      line(canvas, p1, p2, cv::Scalar(0, 255, 0), 10, cv::LINE_AA);
       colourName = "Green";
       control.set_data(0, 37, 0);
       control.set_data(0, 38, 1);
    }
    else if(colour == 2)
    {
-      line(canvas, p1, p2, cv::Scalar(0, 0, 255), 20, cv::LINE_AA);
+      line(canvas, p1, p2, cv::Scalar(0, 0, 255), 10, cv::LINE_AA);
       colourName = "Red";
       control.set_data(0, 38, 0);
       control.set_data(0, 39, 1);
    }
    else if(colour == 3)
    {
-      line(canvas, p1, p2, cv::Scalar(255, 255, 255), 20, cv::LINE_AA);
+      line(canvas, p1, p2, cv::Scalar(255, 255, 255), 10, cv::LINE_AA);
       colourName = "White";
       control.set_data(0, 37, 1);
       control.set_data(0, 38, 1);

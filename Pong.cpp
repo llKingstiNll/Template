@@ -22,6 +22,8 @@ Pong::Pong(int comPort)
    CBase4618::canvas = cv::Scalar(0, 0, 0);
    CBase4618::exitButton = false;
 
+   showWinScreen = false;
+
    // Analog Start State
    int ypos;
    ydata = control.get_analog(26, ypos);
@@ -56,13 +58,48 @@ Pong::~Pong() {}
 
 void Pong::draw(cv::Mat &canvas)
 {
+   // White line in centre
+   cv::line(canvas, cv::Point(canvas.cols / 2, 0), cv::Point(canvas.cols / 2, canvas.rows), cv::Scalar(255, 255, 255), 1);
+
+   // Score
+   cvui::printf(canvas, 300, 25, 1.2, 0xFFFFFF, "%d", (playerScore));
+   cvui::printf(canvas, canvas.cols - 300, 25, 1.2, 0xFFFFFF, "%d", (opponentScore));
+
+   if (playerScore >= 5)
+   {
+      showWinScreen = true;
+   }
+   if (opponentScore >= 5)
+   {
+      showWinScreen = true;
+   }
+   if ((playerScore | opponentScore) < 5) 
+   {
+      showWinScreen = false;
+   }
+
+   if (showWinScreen) 
+   {
+      cv::rectangle(canvas, cv::Rect(0, 0, resx, resy), cv::Scalar(20, 20, 20), -1);
+       
+      if (playerScore >= 5)
+      {
+         cvui::text(canvas, resx / 2 - 200, resy / 2, "You Win", 3, 0xFFFFFF);
+      }
+      else
+      {
+         cvui::text(canvas, resx / 2 - 200, resy / 2, "You Lose", 3, 0xFFFFFF);
+      }
+      ballVelocityX = 0;
+      ballVelocityY = 0;
+   }
    // MENU FRAME and TEXT
    // Button menu background 
    cv::rectangle(canvas, cv::Rect(10, 10, 220, 210), cv::Scalar(70, 70, 70), -1);
 
    // BUTTONS
    // Reset Button
-   if(cvui::button(canvas, 15, 180, 100, 30, "Reset"))
+   if (cvui::button(canvas, 15, 180, 100, 30, "Reset"))
    {
       // Resetting the Canvis
       reset();
@@ -73,22 +110,9 @@ void Pong::draw(cv::Mat &canvas)
    }
 
    // Exit button
-   if(cvui::button(canvas, 125, 180, 100, 30, "Exit"))
+   if (cvui::button(canvas, 125, 180, 100, 30, "Exit"))
    {
       exit(0);
-   }
-
-   // Score
-   cvui::printf(canvas, 300, 25, 1.2, 0xFFFFFF, "%d", (playerScore));
-   cvui::printf(canvas, canvas.cols - 300, 25, 1.2, 0xFFFFFF, "%d", (opponentScore));
-
-   if (playerScore == 5) 
-   {
-      cvui::text(canvas, resx, resy, "You Win", 3, 0xFFFFFF);
-   }
-   if (opponentScore == 5)
-   {
-      cvui::text(canvas, resx, resy, "You Lose", 3, 0xFFFFFF);
    }
 
    // TRACKBAR
@@ -213,12 +237,12 @@ void Pong::update()
    }
 
    // WIN DETECTION
-   if (ballPosX < 10) 
+   if (ballPosX < 25) 
    {
       opponentScore++;
       reset();
    }
-   if (ballPosX > (canvas.cols - 10)) {
+   if (ballPosX > (canvas.cols - 25)) {
       playerScore++;
       reset();
    }
@@ -285,7 +309,7 @@ void Pong::reset()
    paddleWidth = 10;
    paddleHeight = 100;
 
-   paddle1X = 80;
+   paddle1X = 30;
    paddle1Y = (resy / 2) - (paddleHeight / 2);
 
    paddle2X = resx - paddle1X;
