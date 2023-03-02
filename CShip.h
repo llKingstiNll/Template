@@ -8,5 +8,4 @@ class CShip : public CGameObject
 {
 public:
    CShip();
-   float get_posX();
 };

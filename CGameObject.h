@@ -12,7 +12,8 @@ protected:
    int _radius;
 public:
    void move();
-   bool collide(CGameObject& obj);
+   void changeVelocity();
+   bool collide(CGameObject &obj);
    bool collide_wall(cv::Size board);
    void hit();
    int get_lives() { return _lives; }

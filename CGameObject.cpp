@@ -8,16 +8,27 @@
 
 void CGameObject::move()
 {
-   //static auto prevTime = std::chrono::high_resolution_clock::now(); 
-   //auto currentTime = std::chrono::high_resolution_clock::now();
-   //float deltaTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTime - prevTime).count();
-   //prevTime = currentTime; 
    _position += _velocity;
+}
+
+void CGameObject::changeVelocity()
+{
+   _velocity = -_velocity;
 }
 
 bool CGameObject::collide(CGameObject &obj) 
 {
-   return true;
+   float distance = cv::norm(_position - obj._position);
+
+   // If the distance is less than or equal to the sum of the radii, they are colliding
+   if (distance <= _radius + obj._radius)
+   {
+      return true;
+   }
+   else
+   {
+      return false;
+   }
 }
 
 bool CGameObject::collide_wall(cv::Size board) 
@@ -29,7 +40,7 @@ bool CGameObject::collide_wall(cv::Size board)
 
 void CGameObject::hit() 
 {
-   // Implementation
+   _lives--;
 }
 
 void CGameObject::draw(cv::Mat& canvas) 

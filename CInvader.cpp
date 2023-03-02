@@ -6,6 +6,7 @@ CInvader::CInvader(cv::Point2f position) // Modified constructor definition
 {
    _position = position;
    _radius = 15;
-   _velocity = cv::Point2f(30, 0);
+   _lives = 1;
+   _velocity = cv::Point2f(5, 0);
 }
 

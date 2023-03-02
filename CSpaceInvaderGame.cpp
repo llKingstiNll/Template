@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "CSpaceInvaderGame.h"
 
+// NEW
 CSpaceInvaderGame::CSpaceInvaderGame()
 {
    // Canvas Resolution
@@ -76,7 +77,7 @@ void CSpaceInvaderGame::update()
    std::cout << xdata << "\r";
 
    int newPos;
-   newPos = ship.get_posX() - xdata;
+   newPos = ship.get_pos().x - xdata;
 
    if (newPos < 0) 
    {
@@ -106,34 +107,51 @@ void CSpaceInvaderGame::update()
    for (int i = 0; i < vecMissiles.size(); i++) 
    {
       vecMissiles[i].move();
-      std::cout << vecMissiles[0].get_pos().y;
       if (vecMissiles[i].get_pos().y <= 0)
       {
           vecMissiles.erase(vecMissiles.begin() + i);
+          score -= 100;
       }
    }
    numberOfMissiles = vecMissiles.size();
 
    // Moving Invaders
-   if (invaderDirection <= 100) //invader going left
+   if (invaderDirection < 78) //invader moving in x
    {
        for (int i = 0; i < vecInvaders.size(); i++)
        {
            vecInvaders[i].move();
+           
+           // Collision Detection
+           for (int missile = 0; missile < vecMissiles.size(); missile++)
+           {
+              if (vecInvaders[i].collide(vecMissiles[missile])) 
+              {
+                 vecInvaders[i].hit();
+                 vecMissiles[missile].hit();
+                 if (vecInvaders[i].get_lives() == 0) 
+                 {
+                    vecInvaders.erase(vecInvaders.begin() + i);
+                    vecMissiles.erase(vecMissiles.begin() + missile);
+                    score += 200;
+                 }
+              }
+           }
+           
        }
        invaderDirection++;
    }
-   if (invaderDirection >= 100) //invader going right
+   if (invaderDirection == 78) //invader goes down
    {
-       
-       for (int i = 0; i < vecInvaders.size(); i++)
-       {
-           vecInvaders[i].move();
-       }
-       invaderDirection = 0;
+      for (int i = 0; i < vecInvaders.size(); i++)
+      {
+         cv::Point2f pos(vecInvaders[i].get_pos().x, vecInvaders[i].get_pos().y + 50);
+         vecInvaders[i].set_pos(pos);
+         vecInvaders[i].changeVelocity();   
+      }
+      invaderDirection =0;
    }
-
-
+   
    // Reset 
    if (control.get_button(32))
    {
@@ -158,11 +176,12 @@ void CSpaceInvaderGame::reset()
    invaderDirection = 0;
 
    // Initializing Invaders
+   vecInvaders.clear();
    for (int row = 0; row < invaderRows; row++)
    {
       for (int col = 0; col < invaderColumns; col++)
       {
-         cv::Point2f invaderPosition(invaderSpace * col + 250.0, invaderSpace * row + 80.0);
+         cv::Point2f invaderPosition(invaderSpace * col + 30.0, invaderSpace * row + 60.0);
          CInvader invader(invaderPosition);
          vecInvaders.push_back(invader);
       }

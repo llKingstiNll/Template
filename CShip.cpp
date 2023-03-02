@@ -8,9 +8,3 @@ CShip::CShip()
    _radius = 15;
    _lives = 3;
 }
-
-float CShip::get_posX()
-{
-   return _position.x;
-}
-
