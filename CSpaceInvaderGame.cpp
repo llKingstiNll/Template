@@ -47,6 +47,10 @@ void CSpaceInvaderGame::draw(cv::Mat& canvas)
    {
       vecMissiles[i].draw(canvas);
    }
+   for (int i = 0; i < vecInvaderMissiles.size(); i++)
+   {
+      vecInvaderMissiles[i].draw(canvas);
+   }
 
    // HUD Background
    cv::rectangle(canvas, cv::Point(0, 0), cv::Point(1000, 40), cv::Scalar(50, 50, 50), -1);
@@ -54,7 +58,25 @@ void CSpaceInvaderGame::draw(cv::Mat& canvas)
    // Draw text on top of background rectangles
    putText(canvas, "Score: " + std::to_string(score), cv::Point(10, 30), cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 255, 255), 2);
    putText(canvas, "Number Of Missiles: " + std::to_string(numberOfMissiles), cv::Point(350, 30), cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 255, 255), 2);
-   putText(canvas, "Lives: " + std::to_string(_lives), cv::Point(850, 30), cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 255, 255), 2);
+   putText(canvas, "Lives: " + std::to_string(ship.get_lives()), cv::Point(840, 30), cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 255, 255), 2);
+
+   // Win screen
+   if (vecInvaders.size() <= 0)
+   {
+       cv::rectangle(canvas, cv::Point(0, 0), cv::Point(1000, 800), cv::Scalar(50, 50, 50), -1);
+       putText(canvas, "YOU WIN", cv::Point(canvas.cols/2 - 300, canvas.rows/2 ), cv::FONT_HERSHEY_SIMPLEX, 4, cv::Scalar(255, 255, 255), 2);
+       putText(canvas, "Score: " + std::to_string(score), cv::Point(canvas.cols / 2 - 180, canvas.rows / 2 + 130), cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(255, 255, 255), 2);
+
+   }
+
+   // Lose screen
+   if (ship.get_lives() <= 0)
+   {
+       cv::rectangle(canvas, cv::Point(0, 0), cv::Point(1000, 800), cv::Scalar(50, 50, 50), -1);
+       putText(canvas, "YOU LOSE", cv::Point(canvas.cols / 2 - 300, canvas.rows/2), cv::FONT_HERSHEY_SIMPLEX, 4, cv::Scalar(255, 255, 255), 2);
+       putText(canvas, "Score: " + std::to_string(score), cv::Point(canvas.cols / 2 - 180, canvas.rows / 2 + 130), cv::FONT_HERSHEY_SIMPLEX, 2, cv::Scalar(255, 255, 255), 2);
+
+   }
 }
 
 void CSpaceInvaderGame::update()
@@ -74,7 +96,7 @@ void CSpaceInvaderGame::update()
    }
    else xdata = 0.0;
 
-   std::cout << xdata << "\r";
+   //std::cout << xdata << "\r";
 
    int newPos;
    newPos = ship.get_pos().x - xdata;
@@ -96,7 +118,7 @@ void CSpaceInvaderGame::update()
       CMissile missile(ship.get_pos()); 
  
       vecMissiles.push_back(missile);
-      std::cout << "SHOT\n";
+      //std::cout << "SHOT\n";
 
       // Wait Time
       std::chrono::milliseconds duration(20);
@@ -115,29 +137,37 @@ void CSpaceInvaderGame::update()
    }
    numberOfMissiles = vecMissiles.size();
 
+   int randomInvader;
+   if (vecInvaders.size() > 0) 
+   {
+       randomInvader = rand() % (vecInvaders.size() * 3);
+   }
+   else
+   {
+      randomInvader = 100;
+   }
+    
+   if (randomInvader < vecInvaders.size())
+   {
+       CMissile invaderMissile(vecInvaders[randomInvader].get_pos());
+       invaderMissile.changeVelocity();
+       vecInvaderMissiles.push_back(invaderMissile);
+   }
+   for (int i = 0; i < vecInvaderMissiles.size(); i++)
+   {
+       vecInvaderMissiles[i].move();
+       if (vecInvaderMissiles[i].get_pos().y >= 800)
+       {
+           vecInvaderMissiles.erase(vecInvaderMissiles.begin() + i);
+       }
+   }
+
    // Moving Invaders
    if (invaderDirection < 78) //invader moving in x
    {
        for (int i = 0; i < vecInvaders.size(); i++)
        {
-           vecInvaders[i].move();
-           
-           // Collision Detection
-           for (int missile = 0; missile < vecMissiles.size(); missile++)
-           {
-              if (vecInvaders[i].collide(vecMissiles[missile])) 
-              {
-                 vecInvaders[i].hit();
-                 vecMissiles[missile].hit();
-                 if (vecInvaders[i].get_lives() == 0) 
-                 {
-                    vecInvaders.erase(vecInvaders.begin() + i);
-                    vecMissiles.erase(vecMissiles.begin() + missile);
-                    score += 200;
-                 }
-              }
-           }
-           
+           vecInvaders[i].move();           
        }
        invaderDirection++;
    }
@@ -149,7 +179,39 @@ void CSpaceInvaderGame::update()
          vecInvaders[i].set_pos(pos);
          vecInvaders[i].changeVelocity();   
       }
-      invaderDirection =0;
+      invaderDirection = 0;
+   }
+
+   // Collision Detection
+   // Collision with Invaders
+   if (vecMissiles.size() > 0)
+   {
+      for(int i = 0; i < vecInvaders.size(); i++)
+      {
+         for(int missile = 0; missile < vecMissiles.size(); missile++)
+         {
+            if (vecInvaders[i].collide(vecMissiles[missile]))
+            {
+               vecInvaders.erase(vecInvaders.begin() + i);
+               vecMissiles.erase(vecMissiles.begin() + missile);
+               score += 200;
+               break;
+            }
+         }
+      }
+   }
+   // Collision with ship
+   if (vecInvaderMissiles.size() > 0)
+   {
+       for (int invaderMissiles = 0; invaderMissiles < vecInvaderMissiles.size(); invaderMissiles++)
+       {
+           if (ship.collide(vecInvaderMissiles[invaderMissiles]))
+           {
+               vecInvaderMissiles.erase(vecInvaderMissiles.begin() + invaderMissiles);
+               ship.hit();
+               break;
+           }
+       }
    }
    
    // Reset 
@@ -164,19 +226,21 @@ void CSpaceInvaderGame::reset()
 {
    // Default Values
    score = 0;
-   _lives = 3;
+   ship.set_lives(3);
    numberOfMissiles = 0;
-   fireMissle = false;
 
    // Invader Values
    invaderRows = 3;
    invaderColumns = 10;
    invaderSpace = 60;
-   invaderPoints = 10;
    invaderDirection = 0;
 
-   // Initializing Invaders
+   // Clearning vectors
    vecInvaders.clear();
+   vecMissiles.clear();
+   vecInvaderMissiles.clear();
+
+   // Initializing Invaders
    for (int row = 0; row < invaderRows; row++)
    {
       for (int col = 0; col < invaderColumns; col++)

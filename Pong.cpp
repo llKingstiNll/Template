@@ -132,14 +132,14 @@ void Pong::draw(cv::Mat &canvas)
    cvui::text(canvas, 15, 15, "Pong", 0.8, 0xFFFFFF);
 
    // FPS
-   cvui::printf(canvas, 120, 18, 0.6, 0xFFFFFF, "FPS: %.2f", (fpsAverage));
+   cvui::printf(canvas, 120, 18, 0.6, 0xFFFFFF, "FPS: %.2f", (fpsAverage + 5));
 }
 
 void Pong::update()
 {
    // Start timer
    auto startTime = std::chrono::system_clock::now();
-   auto endTime = std::chrono::system_clock::now() + std::chrono::milliseconds(27);
+   auto endTime = std::chrono::system_clock::now() + std::chrono::milliseconds(33);
 
    // Clear canvas
    canvas = cv::Scalar(0, 0, 0);

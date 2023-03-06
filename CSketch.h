@@ -6,7 +6,8 @@
 
 /**
 * 
-* @file.CKetch.h
+* @class CSketch
+* 
 * @brief Child class of CBase that runs the Etch-A-Sketch 
 * 
 * @author Bailey Hung
